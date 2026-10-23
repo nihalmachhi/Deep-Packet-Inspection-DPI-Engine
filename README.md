@@ -2,6 +2,22 @@
 
 This project is a computer networks based Python application for Deep Packet Inspection (DPI). It reads PCAP files, parses Ethernet, IPv4, TCP, and UDP packets, identifies traffic using TLS SNI, HTTP Host, and DNS queries, and filters packets with blocking rules based on app name, source IP, or domain substring.
 
+The engine reads an offline PCAP, extracts supported protocol metadata, applies configured block rules, and writes the resulting packet capture. It supports single-threaded and multi-threaded processing modes.
+
+```mermaid
+flowchart LR
+  A[Offline input PCAP] --> B[Ethernet, IPv4, TCP, UDP parser]
+  B --> C[HTTP Host, TLS SNI, DNS extraction]
+  C --> D[Traffic identification]
+  D --> E[App, source IP, and domain rules]
+  E -->|allowed| F[Output PCAP]
+  E -->|blocked| G[Drop from output]
+  D --> H[Single-threaded or multithreaded engine]
+  H --> E
+```
+
+The tool operates on supplied capture files rather than intercepting live traffic. Matching is limited to the protocols and metadata the parser can recognize; encrypted payload contents are not decrypted.
+
 ## Project Structure
 
 - `main.py` command-line entry point
@@ -34,3 +50,4 @@ python main.py test_dpi.pcap output.pcap --block-app YouTube
 ```bash
 python -m unittest discover -s tests -v
 ```
+
