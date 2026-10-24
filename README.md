@@ -9,15 +9,18 @@ This project is a computer networks based Python application for Deep Packet Ins
 The engine reads an offline PCAP, extracts supported protocol metadata, applies configured block rules, and writes the resulting packet capture. It supports single-threaded and multi-threaded processing modes.
 
 ```mermaid
-flowchart LR
-  A[Offline input PCAP] --> B[Ethernet, IPv4, TCP, UDP parser]
-  B --> C[HTTP Host, TLS SNI, DNS extraction]
-  C --> D[Traffic identification]
-  D --> E[App, source IP, and domain rules]
-  E -->|allowed| F[Output PCAP]
-  E -->|blocked| G[Drop from output]
-  D --> H[Single-threaded or multithreaded engine]
-  H --> E
+flowchart TD
+  A[Offline input PCAP] --> B[PCAP reader]
+  B --> C[Ethernet and IPv4 packet parser]
+  C --> D[Extract TCP or UDP metadata]
+  D --> E[Identify DNS, HTTP Host, and TLS SNI]
+  E --> F[Select single-threaded or multithreaded processing]
+  F --> G[Apply app, source-IP, and domain rules]
+  G -->|allowed| H[Write packet to output PCAP]
+  G -->|blocked| I[Exclude packet from output]
+  H --> J[Filtered capture and summary]
+  I --> J
+  K[Supplied capture file] -. offline input only .-> A
 ```
 
 The tool operates on supplied capture files rather than intercepting live traffic. Matching is limited to the protocols and metadata the parser can recognize; encrypted payload contents are not decrypted.
